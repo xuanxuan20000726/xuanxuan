@@ -1,0 +1,14 @@
+{
+  "name": "ji-yixuan-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "preview": "node scripts/serve.mjs"
+  },
+  "dependencies": {
+    "markdown-it": "14.3.2"
+  }
+}

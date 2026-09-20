@@ -1,0 +1,29 @@
+[
+  {
+    "slug": "melody-flip",
+    "title": "靈感可以生成，選擇仍然是你的",
+    "category": "AI 與音樂",
+    "date": "2026-09-20",
+    "description": "當 AI 開始提供旋律，我更想練習的，是認真聆聽、比較與修改。從 Melody Flip 聊聊創作者的選擇。",
+    "image": "melody-flip.png",
+    "imageAlt": "日系動畫風格的紀依媗戴著耳機，在音樂工作桌前探索旋律；圖中文字為靈感可以生成，選擇仍然是你的。"
+  },
+  {
+    "slug": "connected-piano",
+    "title": "讓科技，陪我們多彈一首歌",
+    "category": "音樂與創作",
+    "date": "2026-09-20",
+    "description": "從 Roland FP-40 與 Piano Sphere，看連網鋼琴如何走進練習日常，以及數據之外仍需要的聆聽。",
+    "image": "connected-piano.png",
+    "imageAlt": "日系動畫風格的紀依媗坐在鋼琴前，身旁有咖啡與綠植；圖中文字為讓科技，陪我們多彈一首歌。"
+  },
+  {
+    "slug": "shared-responsibility",
+    "title": "家裡需要的是伴侶，不是態度稽核員",
+    "category": "生活觀察",
+    "date": "2026-09-20",
+    "description": "當提出需求的人，還得負責提醒、解釋與維持好口氣，我想談談那些沒有被看見的家務與責任。",
+    "image": "shared-responsibility.png",
+    "imageAlt": "日系動畫六格漫畫：照顧三個孩子的太太請伴侶一起想晚餐，對方反覆說不知道，最後只檢討太太的情緒。"
+  }
+]
