@@ -1,5 +1,49 @@
 [
   {
+    "slug": "yuja-wang-xr",
+    "title": "當音樂會走出觀眾席",
+    "category": "音樂與科技",
+    "date": "2026-09-21",
+    "description": "王羽佳《羽火共舞》以預錄演出、虛擬影像與自動演奏鋼琴，探索科技如何改變聆聽。",
+    "image": "yuja-wang-xr.png",
+    "imageAlt": "日系動畫風格的沉浸式鋼琴音樂會配圖，主題為當音樂會走出觀眾席。",
+    "imageWidth": 1122,
+    "imageHeight": 1402
+  },
+  {
+    "slug": "sbx1-spatial-audio",
+    "title": "聲音有了空間，判斷更要準確",
+    "category": "音樂與科技",
+    "date": "2026-09-21",
+    "description": "從 Audioscenic SBX-1 談空間音訊監聽，以及創作者如何判斷播放環境與混音的可靠性。",
+    "image": "sbx1-spatial-audio.png",
+    "imageAlt": "日系動畫風格的空間音訊工作室配圖，主題為聲音有了空間，判斷更要準確。",
+    "imageWidth": 1122,
+    "imageHeight": 1402
+  },
+  {
+    "slug": "buchla-interactive-instruments",
+    "title": "換一種介面，音樂就有新走法",
+    "category": "音樂與創作",
+    "date": "2026-09-21",
+    "description": "從 Don Buchla 互動樂器展，思考觸控、動作與不同演奏介面如何打開創作可能。",
+    "image": "buchla-interactive-instruments.png",
+    "imageAlt": "日系動畫風格的電子樂器展配圖，主題為換一種介面，音樂就有新走法。",
+    "imageWidth": 1122,
+    "imageHeight": 1402
+  },
+  {
+    "slug": "elz1-core",
+    "title": "新聲音，也要接得上你的舞台",
+    "category": "音樂與科技",
+    "date": "2026-09-21",
+    "description": "從 SONICWARE ELZ_1 core 的控制、音色管理與連接方式，聊聊新聲音如何融入熟悉的演奏。",
+    "image": "elz1-core.png",
+    "imageAlt": "日系動畫風格的合成器演奏配圖，主題為新聲音，也要接得上你的舞台。",
+    "imageWidth": 1122,
+    "imageHeight": 1402
+  },
+  {
     "slug": "melody-flip",
     "title": "靈感可以生成，選擇仍然是你的",
     "category": "AI 與音樂",
