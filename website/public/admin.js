@@ -1,5 +1,5 @@
 const root = document.querySelector('[data-admin-dashboard]');
-const base = root?.dataset.base || '/ji-yixuan';
+const base = root?.dataset.base || '/xuanxuan';
 const $ = selector => document.querySelector(selector);
 const formatter = new Intl.DateTimeFormat('zh-TW', {
   timeZone: 'Asia/Taipei', month: '2-digit', day: '2-digit',

@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "clockBoundary": true,
+  "directPageGate": true,
+  "clockRollback": true,
+  "search": true,
+  "category": true,
+  "date": true,
+  "pagination": true,
+  "emptyState": true,
+  "homeLimit": 6,
+  "articles": 38,
+  "mobileWidths": [
+    390,
+    320
+  ],
+  "consoleErrors": [],
+  "browser": "Chromium",
+  "timezone": "America/Los_Angeles"
+}

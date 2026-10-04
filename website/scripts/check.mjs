@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'../dist');
-const site=(process.env.SITE_URL||'http://127.0.0.1:4173/ji-yixuan').replace(/\/$/,'');
+const site=(process.env.SITE_URL||'http://127.0.0.1:4173/xuanxuan').replace(/\/$/,'');
 const base=new URL(site).pathname.replace(/\/$/,'');
 const entries=await fs.readdir(root,{recursive:true});
 let links=0, pages=0;
