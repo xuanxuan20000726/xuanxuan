@@ -3,3 +3,4 @@ website/node_modules/
 website/dist/
 .env
 .env.*
+!.env.ig.example

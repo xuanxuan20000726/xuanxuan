@@ -1,5 +1,6 @@
 const root = document.querySelector('[data-admin-dashboard]');
 const base = root?.dataset.base || '/xuanxuan';
+const schedulerBase = location.hostname === '127.0.0.1' || location.hostname === 'localhost' ? location.origin : 'http://127.0.0.1:43170';
 const $ = selector => document.querySelector(selector);
 const formatter = new Intl.DateTimeFormat('zh-TW', {
   timeZone: 'Asia/Taipei', month: '2-digit', day: '2-digit',
@@ -39,8 +40,50 @@ function renderSchedule(data) {
   $('[data-schedule-list]').innerHTML = data.schedule.map(item => {
     const time = new Date(item.publishAt);
     const state = item.instagramStatus === 'published' ? '已發布' : (time.getTime() <= now ? '時間已到' : '等待發佈');
-    return `<article class="schedule-row"><time datetime="${item.publishAt}"><strong>${formatter.format(time).replace('週','')}</strong><span>${state}</span></time><div class="schedule-copy"><h3>${escapeHTML(item.title)}</h3><p>短影音播報 · 直式三頁重點</p></div><div class="platforms">${platformBadge(item.facebook,'facebook','Facebook')}${platformBadge(item.instagram,'instagram','Instagram',item.instagramStatus)}</div></article>`;
+    const action = item.instagramStatus === 'pending' ? `<button class="schedule-action" type="button" data-schedule-slug="${escapeHTML(item.slug)}">加入排程</button>` : '';
+    return `<article class="schedule-row" data-schedule-row="${escapeHTML(item.slug)}"><time datetime="${item.publishAt}"><strong>${formatter.format(time).replace('週','')}</strong><span>${state}</span></time><div class="schedule-copy"><h3>${escapeHTML(item.title)}</h3><p>短影音播報 · 直式三頁重點</p></div><div class="platforms">${platformBadge(item.facebook,'facebook','Facebook')}${platformBadge(item.instagram,'instagram','Instagram',item.instagramStatus)}${action}</div></article>`;
   }).join('');
+}
+
+function setSchedulerState(kind, label, detail) {
+  $('[data-scheduler-dot]').className = `status-dot ${kind}`;
+  $('[data-scheduler-label]').textContent = label;
+  $('[data-scheduler-detail]').textContent = detail;
+}
+
+async function schedulerRequest(path, options) {
+  const response = await fetch(`${schedulerBase}${path}`, { cache: 'no-store', ...options });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || `排程服務錯誤 ${response.status}`);
+  return data;
+}
+
+async function refreshScheduler() {
+  try {
+    const status = await schedulerRequest('/api/status');
+    const queued = status.jobs.filter(job => ['scheduled','publishing'].includes(job.status)).length;
+    setSchedulerState(status.configured ? 'ok' : 'warn', status.configured ? '排程服務已連線' : '排程服務待設定', status.configured ? `@${status.username} · ${queued} 支影片在本機佇列` : '服務已啟動，但尚未設定 Meta API 權杖。');
+    $('[data-scheduler-jobs]').innerHTML = status.jobs.length ? status.jobs.map(job => `<li><strong>${escapeHTML(job.title)}</strong><span>${escapeHTML(job.status)} · ${formatter.format(new Date(job.publishAt))}</span></li>`).join('') : '<li class="empty-state">本機佇列目前沒有影片。</li>';
+    document.querySelectorAll('[data-schedule-slug]').forEach(button => { button.disabled = !status.configured; });
+  } catch {
+    setSchedulerState('warn', '本機排程服務未啟動', '先執行 npm run ig:server；設定完成後可安裝為登入時自動啟動。');
+    $('[data-scheduler-jobs]').innerHTML = '<li class="empty-state">無法連線到 127.0.0.1:43170。</li>';
+    document.querySelectorAll('[data-schedule-slug]').forEach(button => { button.disabled = true; });
+  }
+}
+
+async function queueArticle(button) {
+  button.disabled = true;
+  button.textContent = '加入中…';
+  try {
+    await schedulerRequest('/api/schedule', { method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ slug: button.dataset.scheduleSlug }) });
+    button.textContent = '已加入';
+    await refreshScheduler();
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = '重試';
+    setSchedulerState('warn', '加入排程失敗', error.message);
+  }
 }
 
 function setSync(status, label, detail) {
@@ -89,6 +132,9 @@ try {
   const data = await response.json();
   renderSchedule(data);
   $('[data-admin-refresh]').addEventListener('click', () => checkDeployment(data));
+  $('[data-scheduler-refresh]').addEventListener('click', refreshScheduler);
+  document.querySelectorAll('[data-schedule-slug]').forEach(button => button.addEventListener('click', () => queueArticle(button)));
+  await refreshScheduler();
   await checkDeployment(data);
 } catch (error) {
   $('[data-schedule-list]').innerHTML = '<p class="empty-state">暫時無法讀取控制台資料，請重新整理頁面。</p>';

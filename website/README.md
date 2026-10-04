@@ -32,6 +32,31 @@ npm run preview
 
 網站無需後端、資料庫或 API 金鑰。程式只打包 `public/` 與生成的頁面，不發布角色設定、原始草稿、圖片生成紀錄或私人登入資料。
 
+## Instagram 自動排程服務
+
+管理控制台會連接本機 `127.0.0.1:43170` 的排程服務。GitHub Pages 只顯示公開狀態；Meta 權杖保留在專案根目錄的 `.env.ig`，該檔案已被 Git 排除，不會部署到網站。
+
+首次設定：
+
+```sh
+cp .env.ig.example .env.ig
+# 編輯 .env.ig，填入 IG_USER_ID 與 META_ACCESS_TOKEN
+cd website
+npm run ig:install
+```
+
+安裝後，macOS 登入時會自動啟動排程服務。本機控制台位於 `http://127.0.0.1:43170/xuanxuan/admin/`。在影片列按「加入排程」後，服務會從 `content/articles.json` 取得發布時間，從文章 Markdown 整理貼文文案，並使用已部署到網站的 MP4 網址。到期時會透過 Instagram Content Publishing API 建立 Reels、等待 Meta 處理完成，再送出發布。
+
+也可以從終端機操作：
+
+```sh
+npm run ig:server
+npm run ig:schedule -- volt-gen2
+npm run ig:run
+```
+
+排程與執行紀錄保存在 `work/instagram-scheduler/`。發布電腦必須保持開機並能連上網路；若到期時離線，服務恢復後會補跑仍為 `scheduled` 的工作。
+
 ## 預排與文章瀏覽
 
 首頁顯示最近 6 篇，文章列表提供關鍵字、主題、日期篩選，每頁 12 篇。所有篩選選項、筆數、搜尋結果與延伸閱讀，均先排除尚未刊登的文章。

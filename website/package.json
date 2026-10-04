@@ -7,7 +7,11 @@
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
     "preview": "node scripts/serve.mjs",
-    "test": "node --test scripts/publishing.test.mjs"
+    "test": "node --test scripts/publishing.test.mjs scripts/instagram-scheduler.test.mjs",
+    "ig:server": "node scripts/instagram-scheduler.mjs",
+    "ig:schedule": "node scripts/instagram-scheduler.mjs schedule",
+    "ig:run": "node scripts/instagram-scheduler.mjs run",
+    "ig:install": "node scripts/install-instagram-scheduler.mjs"
   },
   "dependencies": {
     "markdown-it": "14.3.2"
