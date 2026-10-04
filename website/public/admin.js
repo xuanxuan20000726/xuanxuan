@@ -61,7 +61,7 @@ function syncScheduleRows(jobs) {
     const published = job.status === 'published';
     const channelLabel = (channel, label, type) => {
       const status = channel?.status || 'scheduled';
-      const text = ({ published: '已發布', scheduled: '已排程', publishing: '發佈中', failed: '失敗', authorization_required: '待授權', not_requested: '舊排程未包含' })[status] || status;
+      const text = ({ published: '已發布', scheduled: '本機待發佈', publishing: '發佈中', failed: '失敗', authorization_required: '待授權', not_requested: '舊排程未包含' })[status] || status;
       const active = ['published','scheduled','publishing'].includes(status);
       return `<span class="platform-badge ${active ? 'active' : 'missing'}" title="${escapeHTML(channel?.error || '')}"><i class="${type}"></i>${label} ${text}</span>`;
     };
@@ -90,7 +90,8 @@ async function refreshScheduler() {
     const facebookAuth = status.facebook?.authorizationUrl ? ` <a href="${escapeHTML(status.facebook.authorizationUrl)}" target="_blank" rel="noreferrer">連結 Facebook 粉絲專頁</a>` : '';
     const detail = status.configured ? `@${status.username} · ${queued} 支影片在本機佇列 · Facebook：${status.facebook?.configured ? escapeHTML(status.facebook.pageName || '已連結') : '待連結'}${facebookAuth}` : `服務已啟動；請完成一次官方授權。${instagramAuth}`;
     setSchedulerState(status.configured && status.facebook?.configured ? 'ok' : 'warn', status.configured ? '多平台排程服務已連線' : '排程服務待授權', detail);
-    $('[data-scheduler-jobs]').innerHTML = status.jobs.length ? status.jobs.map(job => `<li><strong>${escapeHTML(job.title)}</strong><span>${escapeHTML(job.status)} · ${formatter.format(new Date(job.publishAt))}</span></li>`).join('') : '<li class="empty-state">本機佇列目前沒有影片。</li>';
+    const jobStatus = value => ({scheduled:'本機待發佈',publishing:'發佈中',published:'已發布',partial:'部分完成',failed:'失敗'})[value] || value;
+    $('[data-scheduler-jobs]').innerHTML = status.jobs.length ? status.jobs.map(job => `<li><strong>${escapeHTML(job.title)}</strong><span>${escapeHTML(jobStatus(job.status))} · ${formatter.format(new Date(job.publishAt))}</span></li>`).join('') : '<li class="empty-state">本機佇列目前沒有影片。</li>';
     syncScheduleRows(status.jobs);
     document.querySelectorAll('[data-schedule-slug]').forEach(button => { button.disabled = !status.configured; });
   } catch {
