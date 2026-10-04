@@ -32,7 +32,7 @@ npm run preview
 
 網站無需後端、資料庫或 API 金鑰。程式只打包 `public/` 與生成的頁面，不發布角色設定、原始草稿、圖片生成紀錄或私人登入資料。
 
-## Instagram 自動排程服務
+## Meta 多平台自動排程服務
 
 管理控制台會連接本機 `127.0.0.1:43170` 的排程服務。GitHub Pages 只顯示公開狀態；Meta 權杖保留在專案根目錄的 `.env.ig`，該檔案已被 Git 排除，不會部署到網站。
 
@@ -45,7 +45,9 @@ cd website
 npm run ig:install
 ```
 
-安裝後，macOS 登入時會自動啟動排程服務。本機控制台位於 `http://127.0.0.1:43170/xuanxuan/admin/`。請在 Meta App 的 Instagram Login 設定加入 `https://xuanxuan20000726.github.io/xuanxuan/oauth/instagram/callback`，再從控制台點「開始 Instagram 授權」。完成後服務會自動保存長效權杖與 IG 使用者 ID；之後影片會透過 Instagram Content Publishing API 排程發布。
+安裝後，macOS 登入時會自動啟動排程服務。本機控制台位於 `http://127.0.0.1:43170/xuanxuan/admin/`。請在 Meta App 的 Instagram Login 設定加入 `https://xuanxuan20000726.github.io/xuanxuan/oauth/instagram/callback`，再從控制台點「開始 Instagram 授權」。完成後服務會自動保存長效權杖與 IG 使用者 ID；每支影片會同步發佈為 Instagram Reel 與 Instagram 限時動態。
+
+Facebook Reels 只能由官方 API 發佈到粉絲專頁。在 Meta App 的 Facebook Login 加入 `https://xuanxuan20000726.github.io/xuanxuan/oauth/facebook/callback`，於 `.env.ig` 設定 `FB_APP_ID`、`FB_APP_SECRET`，再從控制台連結粉絲專頁。服務會保存該粉絲專頁的 ID 與 Page Access Token，之後同一支影片也會同步發佈為 Facebook Reel。
 
 也可以從終端機操作：
 

@@ -48,7 +48,7 @@ function renderSchedule(data) {
 function setSchedulerState(kind, label, detail) {
   $('[data-scheduler-dot]').className = `status-dot ${kind}`;
   $('[data-scheduler-label]').textContent = label;
-  $('[data-scheduler-detail]').textContent = detail;
+  $('[data-scheduler-detail]').innerHTML = detail;
 }
 
 function syncScheduleRows(jobs) {
@@ -59,8 +59,17 @@ function syncScheduleRows(jobs) {
     const platforms = row.querySelector('.platforms');
     if (!platforms) return;
     const published = job.status === 'published';
-    const label = published ? 'Instagram 已發布' : 'Instagram 已排程';
-    platforms.innerHTML = `<span class="platform-badge active"><i class="instagram"></i>${label}</span>`;
+    const channelLabel = (channel, label, type) => {
+      const status = channel?.status || 'scheduled';
+      const text = ({ published: '已發布', scheduled: '已排程', publishing: '發佈中', failed: '失敗', authorization_required: '待授權', not_requested: '舊排程未包含' })[status] || status;
+      const active = ['published','scheduled','publishing'].includes(status);
+      return `<span class="platform-badge ${active ? 'active' : 'missing'}" title="${escapeHTML(channel?.error || '')}"><i class="${type}"></i>${label} ${text}</span>`;
+    };
+    platforms.innerHTML = [
+      channelLabel(job.channels?.instagramReel, 'IG Reels', 'instagram'),
+      channelLabel(job.channels?.instagramStory, 'IG 限動', 'instagram'),
+      channelLabel(job.channels?.facebookReel, 'FB Reels', 'facebook')
+    ].join('');
     const timeState = row.querySelector('time span');
     if (timeState && published) timeState.textContent = '已發布';
   });
@@ -77,8 +86,10 @@ async function refreshScheduler() {
   try {
     const status = await schedulerRequest('/api/status');
     const queued = status.jobs.filter(job => ['scheduled','publishing'].includes(job.status)).length;
-    const authLink = status.authorizationUrl ? ` <a href="${escapeHTML(status.authorizationUrl)}" target="_blank" rel="noreferrer">開始 Instagram 授權</a>` : '';
-    setSchedulerState(status.configured ? 'ok' : 'warn', status.configured ? '排程服務已連線' : '排程服務待授權', status.configured ? `@${status.username} · ${queued} 支影片在本機佇列` : `服務已啟動；請完成一次官方授權。${authLink}`);
+    const instagramAuth = status.authorizationUrl ? ` <a href="${escapeHTML(status.authorizationUrl)}" target="_blank" rel="noreferrer">開始 Instagram 授權</a>` : '';
+    const facebookAuth = status.facebook?.authorizationUrl ? ` <a href="${escapeHTML(status.facebook.authorizationUrl)}" target="_blank" rel="noreferrer">連結 Facebook 粉絲專頁</a>` : '';
+    const detail = status.configured ? `@${status.username} · ${queued} 支影片在本機佇列 · Facebook：${status.facebook?.configured ? escapeHTML(status.facebook.pageName || '已連結') : '待連結'}${facebookAuth}` : `服務已啟動；請完成一次官方授權。${instagramAuth}`;
+    setSchedulerState(status.configured && status.facebook?.configured ? 'ok' : 'warn', status.configured ? '多平台排程服務已連線' : '排程服務待授權', detail);
     $('[data-scheduler-jobs]').innerHTML = status.jobs.length ? status.jobs.map(job => `<li><strong>${escapeHTML(job.title)}</strong><span>${escapeHTML(job.status)} · ${formatter.format(new Date(job.publishAt))}</span></li>`).join('') : '<li class="empty-state">本機佇列目前沒有影片。</li>';
     syncScheduleRows(status.jobs);
     document.querySelectorAll('[data-schedule-slug]').forEach(button => { button.disabled = !status.configured; });

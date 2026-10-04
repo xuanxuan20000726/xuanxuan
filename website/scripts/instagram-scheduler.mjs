@@ -15,7 +15,9 @@ const port = Number(process.env.IG_SCHEDULER_PORT || 43170);
 const graphVersion = process.env.META_GRAPH_VERSION || 'v24.0';
 const siteBase = (process.env.SITE_URL || 'https://xuanxuan20000726.github.io/xuanxuan').replace(/\/$/, '');
 const redirectUri = process.env.IG_REDIRECT_URI || `${siteBase}/oauth/instagram/callback`;
+const facebookRedirectUri = process.env.FB_REDIRECT_URI || `${siteBase}/oauth/facebook/callback`;
 const oauthStates = new Set();
+const facebookOauthStates = new Set();
 
 async function loadEnv() {
   try {
@@ -37,8 +39,29 @@ const config = () => ({
   appId: process.env.IG_APP_ID || '',
   appSecret: process.env.IG_APP_SECRET || '',
   igUserId: process.env.IG_USER_ID || '',
-  accessToken: process.env.IG_ACCESS_TOKEN || process.env.META_ACCESS_TOKEN || ''
+  accessToken: process.env.IG_ACCESS_TOKEN || process.env.META_ACCESS_TOKEN || '',
+  facebookAppId: process.env.FB_APP_ID || '',
+  facebookAppSecret: process.env.FB_APP_SECRET || '',
+  facebookPageId: process.env.FB_PAGE_ID || '',
+  facebookPageName: process.env.FB_PAGE_NAME || '',
+  facebookPageToken: process.env.FB_PAGE_ACCESS_TOKEN || ''
 });
+
+function facebookOauthUrl() {
+  const cfg = config();
+  if (!cfg.facebookAppId) return null;
+  const state = crypto.randomUUID();
+  facebookOauthStates.add(state);
+  setTimeout(() => facebookOauthStates.delete(state), 10 * 60_000).unref();
+  const query = new URLSearchParams({
+    client_id: cfg.facebookAppId,
+    redirect_uri: facebookRedirectUri,
+    response_type: 'code',
+    scope: 'pages_show_list,pages_read_engagement,pages_manage_posts',
+    state
+  });
+  return `https://www.facebook.com/${graphVersion}/dialog/oauth?${query}`;
+}
 
 function oauthUrl() {
   const cfg = config();
@@ -75,6 +98,24 @@ async function exchangeCode(code) {
   return { userId: process.env.IG_USER_ID, expiresIn: longToken.expires_in };
 }
 
+async function exchangeFacebookCode(code) {
+  const cfg = config();
+  if (!cfg.facebookAppId || !cfg.facebookAppSecret) throw new Error('尚未設定 FB_APP_ID 或 FB_APP_SECRET');
+  const tokenResponse = await fetch(`https://graph.facebook.com/${graphVersion}/oauth/access_token?${new URLSearchParams({ client_id: cfg.facebookAppId, client_secret: cfg.facebookAppSecret, redirect_uri: facebookRedirectUri, code })}`);
+  const token = await tokenResponse.json();
+  if (!tokenResponse.ok || token.error) throw new Error(token.error?.message || `Facebook 授權交換失敗（${tokenResponse.status}）`);
+  const pagesResponse = await fetch(`https://graph.facebook.com/${graphVersion}/me/accounts?fields=id,name,access_token,tasks&access_token=${encodeURIComponent(token.access_token)}`);
+  const pages = await pagesResponse.json();
+  if (!pagesResponse.ok || pages.error) throw new Error(pages.error?.message || `無法讀取 Facebook 粉絲專頁（${pagesResponse.status}）`);
+  const page = pages.data?.find(item => item.tasks?.includes('CREATE_CONTENT')) || pages.data?.[0];
+  if (!page) throw new Error('這個 Facebook 帳號沒有可發佈內容的粉絲專頁');
+  process.env.FB_PAGE_ID = String(page.id);
+  process.env.FB_PAGE_NAME = page.name;
+  process.env.FB_PAGE_ACCESS_TOKEN = page.access_token;
+  await fs.appendFile(envFile, `\nFB_PAGE_ID=${process.env.FB_PAGE_ID}\nFB_PAGE_NAME=${process.env.FB_PAGE_NAME}\nFB_PAGE_ACCESS_TOKEN=${process.env.FB_PAGE_ACCESS_TOKEN}\n`);
+  return { pageId: process.env.FB_PAGE_ID, pageName: process.env.FB_PAGE_NAME };
+}
+
 async function ensureState() {
   await fs.mkdir(stateDir, { recursive: true });
   try { await fs.access(queueFile); }
@@ -98,7 +139,16 @@ async function log(message) {
 
 function publicJob(job) {
   const { caption, ...safe } = job;
-  return { ...safe, captionLength: caption?.length || 0 };
+  const facebookReady = Boolean(config().facebookPageId && config().facebookPageToken);
+  return {
+    ...safe,
+    channels: safe.channels || {
+      instagramReel: { status: job.status },
+      instagramStory: { status: job.status === 'published' ? 'not_requested' : 'scheduled' },
+      facebookReel: { status: facebookReady ? 'scheduled' : 'authorization_required' }
+    },
+    captionLength: caption?.length || 0
+  };
 }
 
 function cleanCaption(source) {
@@ -139,6 +189,17 @@ async function graph(pathname, fields = {}) {
   return result;
 }
 
+async function facebookGraph(pathname, fields = {}) {
+  const { facebookPageToken } = config();
+  const body = new URLSearchParams({ ...fields, access_token: facebookPageToken });
+  const response = await fetch(`https://graph.facebook.com/${graphVersion}/${pathname}`, {
+    method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body
+  });
+  const result = await response.json();
+  if (!response.ok || result.error) throw new Error(result.error?.message || `Facebook API ${response.status}`);
+  return result;
+}
+
 async function containerStatus(id) {
   const { accessToken } = config();
   const response = await fetch(`https://graph.instagram.com/${graphVersion}/${id}?fields=status_code,status&access_token=${encodeURIComponent(accessToken)}`);
@@ -149,24 +210,61 @@ async function containerStatus(id) {
 
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-async function publish(job) {
-  const { igUserId, accessToken } = config();
-  if (!igUserId || !accessToken) throw new Error('尚未設定 IG_USER_ID 或 IG_ACCESS_TOKEN');
-  const created = await graph(`${igUserId}/media`, {
-    media_type: 'REELS', video_url: job.videoUrl, caption: job.caption, share_to_feed: 'true'
-  });
+async function waitForInstagramContainer(id) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    const state = await containerStatus(created.id);
-    if (state.status_code === 'FINISHED') {
-      const published = await graph(`${igUserId}/media_publish`, { creation_id: created.id });
-      return { containerId: created.id, mediaId: published.id };
-    }
-    if (state.status_code === 'ERROR' || state.status_code === 'EXPIRED') {
-      throw new Error(state.status || `影片容器狀態：${state.status_code}`);
-    }
+    const state = await containerStatus(id);
+    if (state.status_code === 'FINISHED') return;
+    if (state.status_code === 'ERROR' || state.status_code === 'EXPIRED') throw new Error(state.status || `影片容器狀態：${state.status_code}`);
     await pause(5000);
   }
   throw new Error('Meta 處理影片逾時');
+}
+
+async function publishInstagram(job, mediaType, fields = {}) {
+  const { igUserId, accessToken } = config();
+  if (!igUserId || !accessToken) throw new Error('尚未設定 IG_USER_ID 或 IG_ACCESS_TOKEN');
+  const created = await graph(`${igUserId}/media`, {
+    media_type: mediaType, video_url: job.videoUrl, ...fields
+  });
+  await waitForInstagramContainer(created.id);
+  const published = await graph(`${igUserId}/media_publish`, { creation_id: created.id });
+  return { containerId: created.id, mediaId: published.id };
+}
+
+async function publishFacebookReel(job) {
+  const { facebookPageId, facebookPageToken } = config();
+  if (!facebookPageId || !facebookPageToken) throw new Error('尚未連結 Facebook 粉絲專頁');
+  const started = await facebookGraph(`${facebookPageId}/video_reels`, { upload_phase: 'start' });
+  const upload = await fetch(started.upload_url, {
+    method: 'POST',
+    headers: { Authorization: `OAuth ${facebookPageToken}`, file_url: job.videoUrl }
+  });
+  const uploadResult = await upload.json();
+  if (!upload.ok || uploadResult.error || uploadResult.success === false) throw new Error(uploadResult.error?.message || `Facebook Reels 上傳失敗（${upload.status}）`);
+  const finished = await facebookGraph(`${facebookPageId}/video_reels`, {
+    upload_phase: 'finish', video_id: started.video_id, video_state: 'PUBLISHED', description: job.caption
+  });
+  return { videoId: started.video_id, success: finished.success !== false };
+}
+
+async function publishChannel(job, channel, action) {
+  job.channels ||= {};
+  job.channels[channel] = { status: 'publishing', updatedAt: new Date().toISOString() };
+  try {
+    const result = await action();
+    job.channels[channel] = { ...result, status: 'published', publishedAt: new Date().toISOString(), error: null };
+  } catch (error) {
+    job.channels[channel] = { status: 'failed', error: error.message, updatedAt: new Date().toISOString() };
+  }
+}
+
+async function publish(job) {
+  if (job.channels?.instagramReel?.status !== 'published') await publishChannel(job, 'instagramReel', () => publishInstagram(job, 'REELS', { caption: job.caption, share_to_feed: 'true' }));
+  if (job.channels?.instagramStory?.status !== 'published') await publishChannel(job, 'instagramStory', () => publishInstagram(job, 'STORIES'));
+  if (job.channels?.facebookReel?.status !== 'published') await publishChannel(job, 'facebookReel', () => publishFacebookReel(job));
+  const states = Object.values(job.channels).map(channel => channel.status);
+  if (states.every(status => status === 'failed')) throw new Error('所有發佈管道皆失敗');
+  return { channels: job.channels };
 }
 
 let processing = false;
@@ -181,8 +279,10 @@ async function runDueJobs() {
       job.updatedAt = new Date().toISOString();
       await writeQueue(queue);
       try {
-        Object.assign(job, await publish(job), { status: 'published', publishedAt: new Date().toISOString(), error: null });
-        await log(`published ${job.slug} ${job.mediaId}`);
+        Object.assign(job, await publish(job));
+        const complete = Object.values(job.channels).every(channel => channel.status === 'published');
+        Object.assign(job, { status: complete ? 'published' : 'partial', publishedAt: complete ? new Date().toISOString() : null, error: complete ? null : '部分管道尚未發佈' });
+        await log(`published ${job.slug} ${JSON.stringify(Object.fromEntries(Object.entries(job.channels).map(([key, value]) => [key, value.status])))}`);
       } catch (error) {
         job.status = 'failed';
         job.error = error.message;
@@ -199,11 +299,17 @@ async function schedule(slug, override = {}) {
   const queue = await readQueue();
   const existing = queue.jobs.find(job => job.slug === slug);
   if (existing?.status === 'published') return existing;
+  const previousChannels = existing?.channels || {};
   const job = {
     ...article,
     publishAt: override.publishAt || article.publishAt,
     caption: override.caption || article.caption,
     status: 'scheduled', error: null,
+    channels: {
+      instagramReel: previousChannels.instagramReel?.status === 'published' ? previousChannels.instagramReel : { status: 'scheduled' },
+      instagramStory: previousChannels.instagramStory?.status === 'published' ? previousChannels.instagramStory : { status: 'scheduled' },
+      facebookReel: previousChannels.facebookReel?.status === 'published' ? previousChannels.facebookReel : { status: config().facebookPageId && config().facebookPageToken ? 'scheduled' : 'authorization_required' }
+    },
     createdAt: existing?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -240,6 +346,12 @@ async function handler(req, res) {
       return send(res, 200, {
         online: true, configured: Boolean(cfg.igUserId && cfg.accessToken), username: cfg.username,
         graphVersion, redirectUri, authorizationUrl: cfg.appId && cfg.appSecret && !cfg.accessToken ? oauthUrl() : null,
+        facebook: {
+          configured: Boolean(cfg.facebookPageId && cfg.facebookPageToken),
+          pageName: cfg.facebookPageName,
+          authorizationUrl: cfg.facebookAppId && cfg.facebookAppSecret && !cfg.facebookPageToken ? facebookOauthUrl() : null,
+          redirectUri: facebookRedirectUri
+        },
         jobs: queue.jobs.map(publicJob), checkedAt: new Date().toISOString()
       });
     }
@@ -258,6 +370,22 @@ async function handler(req, res) {
       const result = await exchangeCode(code);
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
       return res.end(`<meta charset="utf-8"><title>Instagram 授權完成</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;max-width:640px;margin:12vh auto;padding:24px;line-height:1.7}a{color:#c13584}</style><h1>Instagram 授權完成</h1><p>帳號已連結，使用者 ID：${result.userId}</p><p>請回到控制台重新整理，確認排程服務已連線。</p><p><a href="http://127.0.0.1:${port}/xuanxuan/admin/">返回控制台</a></p>`);
+    }
+    if (url.pathname === '/auth/facebook/start' && req.method === 'GET') {
+      const target = facebookOauthUrl();
+      if (!target) return send(res, 500, { error: '尚未設定 FB_APP_ID' });
+      res.writeHead(302, { location: target }); return res.end();
+    }
+    if (url.pathname === '/auth/facebook/callback' && req.method === 'GET') {
+      const state = url.searchParams.get('state');
+      const code = url.searchParams.get('code');
+      if (!state || !facebookOauthStates.has(state)) throw new Error('Facebook 授權狀態已失效，請重新開始登入');
+      facebookOauthStates.delete(state);
+      if (url.searchParams.get('error')) throw new Error(url.searchParams.get('error_description') || 'Facebook 拒絕授權');
+      if (!code) throw new Error('Facebook 未回傳授權碼');
+      const result = await exchangeFacebookCode(code);
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      return res.end(`<meta charset="utf-8"><title>Facebook 授權完成</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;max-width:640px;margin:12vh auto;padding:24px;line-height:1.7}a{color:#1877f2}</style><h1>Facebook 粉絲專頁已連結</h1><p>${result.pageName}</p><p><a href="http://127.0.0.1:${port}/xuanxuan/admin/">返回控制台</a></p>`);
     }
     if (url.pathname === '/api/schedule' && req.method === 'POST') {
       const body = await readBody(req);

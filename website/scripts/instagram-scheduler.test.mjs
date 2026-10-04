@@ -20,5 +20,8 @@ test('local Instagram scheduler exposes a credential-safe status endpoint', asyn
     assert.equal(data.online, true);
     assert.equal(data.username, 'xuan.xuan20000726');
     assert.equal('accessToken' in data, false);
+    assert.equal(typeof data.facebook.configured, 'boolean');
+    assert.equal('facebookPageToken' in data.facebook, false);
+    assert.deepEqual(Object.keys(data.jobs[0]?.channels || {}).sort(), ['facebookReel','instagramReel','instagramStory'].sort());
   } finally { child.kill('SIGTERM'); }
 });
