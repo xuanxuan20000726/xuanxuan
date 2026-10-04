@@ -12,6 +12,10 @@ UMG 與 ElevenLabs 宣布多年合作，要建立一個有授權的 AI 音樂創
 
 我的看法是：合法是起點，不是產品的免檢章。創作者要看得懂自己同意了什麼。報酬、追蹤與退出要能真正執行。科技成為創作者的另一雙手之前，先要願意接受創作者用耳朵、手感與權利條件來驗收。
 
+我也想多補一句鼓勵：產業願意把授權放到產品起點，是值得鼓勵的一步。只要同意、分帳與退出都能被清楚執行，創作者就更有機會安心參與新工具。
+規則越透明，音樂人越能帶著選擇權進場，也越可能做出真正有意思的新合作。
+期待合作把尊重真正寫進每一個環節。
+
 來源：[Universal Music Group](https://www.universalmusic.com/universal-music-group-and-elevenlabs-announce-multi-year-strategic-agreement-beginning-with-a-new-licensed-ai-music-creation-platform/)，2026-09-10。
 
 #音樂科技 #AI音樂 #音訊創作 #樂器科技

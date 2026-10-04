@@ -8,8 +8,8 @@
     "description": "SANDYNE 2.5 新增 Recorder、MIDI Recorder、多軌錄音、手動 Routing、Harmony 視圖與 macOS Audio Unit 支援；官方仍標示 macOS 尚非 AUv3。",
     "image": "2026-10-11-sandyne-25-workflow.png",
     "imageAlt": "米媗媗的日系動畫重點圖：免費 DAW 一口氣長大，功能多了更要守住工作流。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-11-sandyne-25-workflow.mp4"
   },
   {
@@ -21,8 +21,8 @@
     "description": "高蕾雅推出首張個人鄒語 EP《yokeoasu 美好人生》，三首作品以 City Pop 為基底，描寫狩獵想像、青春心動與小米收穫祭前夕的家庭記憶。",
     "image": "2026-10-11-yokeoasu-tsou-citypop.png",
     "imageAlt": "米媗媗的日系動畫重點圖：族語音樂不是文化標本，也可以是今天的 City Pop。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-11-yokeoasu-tsou-citypop.mp4"
   },
   {
@@ -34,8 +34,8 @@
     "description": "ZENOLOGY GX for iPad 1.9.3 起支援 AUv3，可載入 Logic Pro for iPad、GarageBand、Cubasis 與 AUM 等宿主；專案儲存、效能與授權仍應逐一確認。",
     "image": "2026-10-10-zenology-gx-auv3.png",
     "imageAlt": "米媗媗的日系動畫重點圖：iPad 合成器進入 AUv3，靈感終於不用停在獨立 App。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-10-zenology-gx-auv3.mp4"
   },
   {
@@ -47,8 +47,8 @@
     "description": "宇宙人睽違四年推出第六張專輯《Dear You》，赴東京採盤帶錄音；團員表示每首歌錄製多個版本，再到不同環境試聽後決定最終版本。",
     "image": "2026-10-10-cosmos-dear-you-tape.png",
     "imageAlt": "米媗媗的日系動畫重點圖：盤帶不是懷舊濾鏡，而是一套逼你做決定的錄音方法。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-10-cosmos-dear-you-tape.mp4"
   },
   {
@@ -60,8 +60,8 @@
     "description": "IK Multimedia 正式推出 TONEX 2 Player 2.1；免費更新聚焦新版播放器，而 TONEX Rig 為另購升級，可在軟體中提供 TONEX Board 的效果與路由能力。",
     "image": "2026-10-09-tonex-2-rig.png",
     "imageAlt": "米媗媗的日系動畫重點圖：把整塊效果器搬進軟體，方便之前先把版本說清楚。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-09-tonex-2-rig.mp4"
   },
   {
@@ -73,8 +73,8 @@
     "description": "呼聲 VOICES 2026 於台北大佳河濱公園登場，徐佳瑩與 TRASH 現場首唱新歌並預告年底新作；大型音樂祭同時成為新作品測試現場回應的場域。",
     "image": "2026-10-09-voices-2026-new-songs.png",
     "imageAlt": "米媗媗的日系動畫重點圖：音樂祭不只排歌單，也在測試作品的第一口呼吸。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-09-voices-2026-new-songs.mp4"
   },
   {
@@ -86,8 +86,8 @@
     "description": "BOSS EX-4 可同時運行 4 個效果，內建 120 種效果；四個音訊插孔可組成效果迴路；支援外接開關、表情踏板與 TRS MIDI。",
     "image": "2026-10-08-boss-ex4-expander.png",
     "imageAlt": "米媗媗的日系動畫重點圖：120 種效果不是點菜單，舞台需要一條走得完的路。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-08-boss-ex4-expander.mp4"
   },
   {
@@ -99,8 +99,8 @@
     "description": "Snapdragon Sound Elite Gen 2 整合端側 AI、低功耗 Wi-Fi 6E 與音訊技術；官方稱 AI 能力最高 2 倍、功耗最高降 40%；隱私、提示與雲端依賴需要終端產品驗證。",
     "image": "2026-10-08-snapdragon-ai-hearables.png",
     "imageAlt": "米媗媗的日系動畫重點圖：耳機懂得更多，也要讓人知道它聽了什麼。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-08-snapdragon-ai-hearables.mp4"
   },
   {
@@ -112,8 +112,8 @@
     "description": "Audient Horizon 以 Thunderbolt 3 與 32-bit 轉換為核心；官方稱 192kHz 時往返延遲 0.99ms；macOS 單一驅動可擴至 200×200 I/O，實際效能仍受緩衝、外掛與工作流影響。",
     "image": "2026-10-07-audient-horizon-native.png",
     "imageAlt": "米媗媗的日系動畫重點圖：0.99 毫秒很漂亮，錄音室還要看完整路徑。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-07-audient-horizon-native.mp4"
   },
   {
@@ -125,8 +125,8 @@
     "description": "UMG 與 ElevenLabs 簽署多年授權與產品合作；計畫讓樂迷使用參與藝人作品做 remix、mashup 與新詮釋；參與範圍與分配機制仍待平台公開。",
     "image": "2026-10-07-umg-elevenlabs-licensed-ai.png",
     "imageAlt": "米媗媗的日系動畫重點圖：AI 音樂走向授權，同意不能只寫在新聞稿。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-07-umg-elevenlabs-licensed-ai.mp4"
   },
   {
@@ -138,8 +138,8 @@
     "description": "Matteo Mancuso 簽名 REVSTAR 採 DiMarzio PAF 36th Anniversary 拾音器、5 段切換與 Focus Switch；中空式琴身及碳纖強化琴頸著重回應與平衡。",
     "image": "2026-10-06-yamaha-rs20mm.png",
     "imageAlt": "米媗媗的日系動畫重點圖：好的簽名琴，應該放大觸弦，不是放大簽名。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-06-yamaha-rs20mm.mp4"
   },
   {
@@ -151,8 +151,8 @@
     "description": "Engram 以小型神經音訊模型在硬體上生成、變形與延展取樣；不需網路或訂閱；目前仍是可能變更的研究原型。",
     "image": "2026-10-06-engram-tiny-ai.png",
     "imageAlt": "米媗媗的日系動畫重點圖：AI 進入取樣器，創作的重點是能不能失控。",
-    "imageWidth": 941,
-    "imageHeight": 1672,
+    "imageWidth": 1080,
+    "imageHeight": 1920,
     "video": "2026-10-06-engram-tiny-ai.mp4"
   },
   {
