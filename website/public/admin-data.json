@@ -36,8 +36,8 @@
       "title": "Volt Gen 2：錄音介面開始主動守住表演",
       "slug": "volt-gen2",
       "facebook": false,
-      "instagram": true,
-      "instagramStatus": "scheduled"
+      "instagram": false,
+      "instagramStatus": "pending"
     }
   ],
   "website": {
