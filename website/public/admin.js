@@ -62,7 +62,8 @@ async function refreshScheduler() {
   try {
     const status = await schedulerRequest('/api/status');
     const queued = status.jobs.filter(job => ['scheduled','publishing'].includes(job.status)).length;
-    setSchedulerState(status.configured ? 'ok' : 'warn', status.configured ? '排程服務已連線' : '排程服務待授權', status.configured ? `@${status.username} · ${queued} 支影片在本機佇列` : '服務已啟動；請用 Instagram Login 完成一次官方授權。');
+    const authLink = status.authorizationUrl ? ` <a href="${escapeHTML(status.authorizationUrl)}" target="_blank" rel="noreferrer">開始 Instagram 授權</a>` : '';
+    setSchedulerState(status.configured ? 'ok' : 'warn', status.configured ? '排程服務已連線' : '排程服務待授權', status.configured ? `@${status.username} · ${queued} 支影片在本機佇列` : `服務已啟動；請完成一次官方授權。${authLink}`);
     $('[data-scheduler-jobs]').innerHTML = status.jobs.length ? status.jobs.map(job => `<li><strong>${escapeHTML(job.title)}</strong><span>${escapeHTML(job.status)} · ${formatter.format(new Date(job.publishAt))}</span></li>`).join('') : '<li class="empty-state">本機佇列目前沒有影片。</li>';
     document.querySelectorAll('[data-schedule-slug]').forEach(button => { button.disabled = !status.configured; });
   } catch {

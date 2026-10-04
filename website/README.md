@@ -40,12 +40,12 @@ npm run preview
 
 ```sh
 cp .env.ig.example .env.ig
-# 編輯 .env.ig，填入 IG_USER_ID 與 IG_ACCESS_TOKEN
+# 編輯 .env.ig，填入 Meta App Secret；IG_USER_ID 與 IG_ACCESS_TOKEN 會在 Instagram Login 完成後自動寫入
 cd website
 npm run ig:install
 ```
 
-安裝後，macOS 登入時會自動啟動排程服務。本機控制台位於 `http://127.0.0.1:43170/xuanxuan/admin/`。本流程採 Instagram Login，不需要連結 Facebook 粉絲專頁。在影片列按「加入排程」後，服務會從 `content/articles.json` 取得發布時間，從文章 Markdown 整理貼文文案，並使用已部署到網站的 MP4 網址。到期時會透過 Instagram Content Publishing API 建立 Reels、等待 Instagram 處理完成，再送出發布。
+安裝後，macOS 登入時會自動啟動排程服務。本機控制台位於 `http://127.0.0.1:43170/xuanxuan/admin/`。請在 Meta App 的 Instagram Login 設定加入 `https://xuanxuan20000726.github.io/xuanxuan/oauth/instagram/callback`，再從控制台點「開始 Instagram 授權」。完成後服務會自動保存長效權杖與 IG 使用者 ID；之後影片會透過 Instagram Content Publishing API 排程發布。
 
 也可以從終端機操作：
 

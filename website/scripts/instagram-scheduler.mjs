@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import http from 'node:http';
+import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +14,8 @@ const envFile = path.join(projectRoot, '.env.ig');
 const port = Number(process.env.IG_SCHEDULER_PORT || 43170);
 const graphVersion = process.env.META_GRAPH_VERSION || 'v24.0';
 const siteBase = (process.env.SITE_URL || 'https://xuanxuan20000726.github.io/xuanxuan').replace(/\/$/, '');
+const redirectUri = process.env.IG_REDIRECT_URI || `${siteBase}/oauth/instagram/callback`;
+const oauthStates = new Set();
 
 async function loadEnv() {
   try {
@@ -31,9 +34,46 @@ await loadEnv();
 
 const config = () => ({
   username: process.env.IG_USERNAME || 'xuan.xuan20000726',
+  appId: process.env.IG_APP_ID || '',
+  appSecret: process.env.IG_APP_SECRET || '',
   igUserId: process.env.IG_USER_ID || '',
   accessToken: process.env.IG_ACCESS_TOKEN || process.env.META_ACCESS_TOKEN || ''
 });
+
+function oauthUrl() {
+  const cfg = config();
+  if (!cfg.appId) return null;
+  const state = crypto.randomUUID();
+  oauthStates.add(state);
+  setTimeout(() => oauthStates.delete(state), 10 * 60_000).unref();
+  const query = new URLSearchParams({
+    client_id: cfg.appId,
+    redirect_uri: redirectUri,
+    response_type: 'code',
+    scope: 'instagram_business_basic,instagram_business_content_publish',
+    state
+  });
+  return `https://www.instagram.com/oauth/authorize?${query}`;
+}
+
+async function exchangeCode(code) {
+  const cfg = config();
+  if (!cfg.appId || !cfg.appSecret) throw new Error('尚未設定 IG_APP_ID 或 IG_APP_SECRET');
+  const shortResponse = await fetch('https://api.instagram.com/oauth/access_token', {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: cfg.appId, client_secret: cfg.appSecret, grant_type: 'authorization_code', redirect_uri: redirectUri, code })
+  });
+  const shortToken = await shortResponse.json();
+  if (!shortResponse.ok || shortToken.error_type || shortToken.error_message) throw new Error(shortToken.error_message || `Instagram 授權交換失敗（${shortResponse.status}）`);
+  const longResponse = await fetch(`https://graph.instagram.com/${graphVersion}/access_token?${new URLSearchParams({ grant_type: 'ig_exchange_token', client_secret: cfg.appSecret, access_token: shortToken.access_token })}`);
+  const longToken = await longResponse.json();
+  if (!longResponse.ok || longToken.error) throw new Error(longToken.error?.message || `長效權杖交換失敗（${longResponse.status}）`);
+  process.env.IG_ACCESS_TOKEN = longToken.access_token;
+  process.env.IG_USER_ID = String(shortToken.user_id);
+  await fs.appendFile(envFile, `\nIG_USER_ID=${process.env.IG_USER_ID}\nIG_ACCESS_TOKEN=${process.env.IG_ACCESS_TOKEN}\n`);
+  return { userId: process.env.IG_USER_ID, expiresIn: longToken.expires_in };
+}
 
 async function ensureState() {
   await fs.mkdir(stateDir, { recursive: true });
@@ -199,8 +239,25 @@ async function handler(req, res) {
       const cfg = config();
       return send(res, 200, {
         online: true, configured: Boolean(cfg.igUserId && cfg.accessToken), username: cfg.username,
-        graphVersion, jobs: queue.jobs.map(publicJob), checkedAt: new Date().toISOString()
+        graphVersion, redirectUri, authorizationUrl: cfg.appId && cfg.appSecret && !cfg.accessToken ? oauthUrl() : null,
+        jobs: queue.jobs.map(publicJob), checkedAt: new Date().toISOString()
       });
+    }
+    if (url.pathname === '/auth/instagram/start' && req.method === 'GET') {
+      const target = oauthUrl();
+      if (!target) return send(res, 500, { error: '尚未設定 IG_APP_ID' });
+      res.writeHead(302, { location: target }); return res.end();
+    }
+    if (url.pathname === '/auth/instagram/callback' && req.method === 'GET') {
+      const state = url.searchParams.get('state');
+      const code = url.searchParams.get('code');
+      if (!state || !oauthStates.has(state)) throw new Error('授權狀態已失效，請重新開始登入');
+      oauthStates.delete(state);
+      if (url.searchParams.get('error')) throw new Error(url.searchParams.get('error_description') || 'Instagram 拒絕授權');
+      if (!code) throw new Error('Instagram 未回傳授權碼');
+      const result = await exchangeCode(code);
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      return res.end(`<meta charset="utf-8"><title>Instagram 授權完成</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;max-width:640px;margin:12vh auto;padding:24px;line-height:1.7}a{color:#c13584}</style><h1>Instagram 授權完成</h1><p>帳號已連結，使用者 ID：${result.userId}</p><p>請回到控制台重新整理，確認排程服務已連線。</p><p><a href="http://127.0.0.1:${port}/xuanxuan/admin/">返回控制台</a></p>`);
     }
     if (url.pathname === '/api/schedule' && req.method === 'POST') {
       const body = await readBody(req);
