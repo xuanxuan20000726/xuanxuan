@@ -49,6 +49,8 @@ npm run ig:install
 
 Facebook Reels 只能由官方 API 發佈到粉絲專頁。在 Meta App 的 Facebook Login 加入 `https://xuanxuan20000726.github.io/xuanxuan/oauth/facebook/callback`，於 `.env.ig` 設定 `FB_APP_ID`、`FB_APP_SECRET`，再從控制台連結粉絲專頁。服務會保存該粉絲專頁的 ID 與 Page Access Token，之後同一支影片也會同步發佈為 Facebook Reel。
 
+控制台的「同步全部影片排程」會把目前內容行事曆中的影片一次寫入本機佇列；「立即執行到期任務」會立刻檢查並發布所有已到時間的項目。頁面同時提供 Meta Business Suite 與 Facebook 專業內容行事曆入口，供人工核對官方平台顯示結果。一般網頁受瀏覽器同源與登入安全限制，不能直接操控這兩個 Meta 頁面，因此自動化發佈由本機服務與官方 API 執行。
+
 也可以從終端機操作：
 
 ```sh

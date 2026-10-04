@@ -114,6 +114,37 @@ async function queueArticle(button) {
   }
 }
 
+async function syncAllSchedules(button, data) {
+  button.disabled = true;
+  button.textContent = '同步中…';
+  try {
+    await schedulerRequest('/api/schedule-all', {
+      method: 'POST', headers: {'content-type':'application/json'},
+      body: JSON.stringify({ slugs: data.schedule.map(item => item.slug) })
+    });
+    button.textContent = '已同步全部排程';
+    await refreshScheduler();
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = '重試同步';
+    setSchedulerState('warn', '同步排程失敗', escapeHTML(error.message));
+  }
+}
+
+async function runDueSchedules(button) {
+  button.disabled = true;
+  button.textContent = '執行中…';
+  try {
+    await schedulerRequest('/api/run', { method: 'POST' });
+    button.textContent = '已檢查到期任務';
+    await refreshScheduler();
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = '重試執行';
+    setSchedulerState('warn', '執行排程失敗', escapeHTML(error.message));
+  }
+}
+
 function setSync(status, label, detail) {
   $('[data-sync-dot]').className = `status-dot ${status}`;
   $('[data-sync-label]').textContent = label;
@@ -161,6 +192,8 @@ try {
   renderSchedule(data);
   $('[data-admin-refresh]').addEventListener('click', () => checkDeployment(data));
   $('[data-scheduler-refresh]').addEventListener('click', refreshScheduler);
+  $('[data-sync-all-schedules]').addEventListener('click', event => syncAllSchedules(event.currentTarget, data));
+  $('[data-run-due-schedules]').addEventListener('click', event => runDueSchedules(event.currentTarget));
   document.querySelectorAll('[data-schedule-slug]').forEach(button => button.addEventListener('click', () => queueArticle(button)));
   await refreshScheduler();
   await checkDeployment(data);

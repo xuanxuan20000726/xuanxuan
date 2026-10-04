@@ -391,6 +391,13 @@ async function handler(req, res) {
       const body = await readBody(req);
       return send(res, 201, { ok: true, job: publicJob(await schedule(body.slug, body)) });
     }
+    if (url.pathname === '/api/schedule-all' && req.method === 'POST') {
+      const body = await readBody(req);
+      if (!Array.isArray(body.slugs) || !body.slugs.length) throw new Error('沒有可加入的影片');
+      const jobs = [];
+      for (const slug of [...new Set(body.slugs)]) jobs.push(publicJob(await schedule(slug)));
+      return send(res, 201, { ok: true, jobs });
+    }
     if (url.pathname === '/api/run' && req.method === 'POST') {
       await runDueJobs();
       return send(res, 200, { ok: true, jobs: (await readQueue()).jobs.map(publicJob) });
