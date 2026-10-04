@@ -259,7 +259,7 @@ async function publishChannel(job, channel, action) {
 }
 
 async function publish(job) {
-  if (job.channels?.instagramReel?.status !== 'published') await publishChannel(job, 'instagramReel', () => publishInstagram(job, 'REELS', { caption: job.caption, share_to_feed: 'true' }));
+  if (!['published','remote_scheduled'].includes(job.channels?.instagramReel?.status)) await publishChannel(job, 'instagramReel', () => publishInstagram(job, 'REELS', { caption: job.caption, share_to_feed: 'true' }));
   if (job.channels?.instagramStory?.status !== 'published') await publishChannel(job, 'instagramStory', () => publishInstagram(job, 'STORIES'));
   if (job.channels?.facebookReel?.status !== 'published') await publishChannel(job, 'facebookReel', () => publishFacebookReel(job));
   const states = Object.values(job.channels).map(channel => channel.status);
@@ -280,7 +280,7 @@ async function runDueJobs() {
       await writeQueue(queue);
       try {
         Object.assign(job, await publish(job));
-        const complete = Object.values(job.channels).every(channel => channel.status === 'published');
+        const complete = Object.values(job.channels).every(channel => ['published','remote_scheduled'].includes(channel.status));
         Object.assign(job, { status: complete ? 'published' : 'partial', publishedAt: complete ? new Date().toISOString() : null, error: complete ? null : '部分管道尚未發佈' });
         await log(`published ${job.slug} ${JSON.stringify(Object.fromEntries(Object.entries(job.channels).map(([key, value]) => [key, value.status])))}`);
       } catch (error) {
@@ -397,6 +397,25 @@ async function handler(req, res) {
       const jobs = [];
       for (const slug of [...new Set(body.slugs)]) jobs.push(publicJob(await schedule(slug)));
       return send(res, 201, { ok: true, jobs });
+    }
+    if (url.pathname === '/api/remote-scheduled' && req.method === 'POST') {
+      const body = await readBody(req);
+      const allowed = new Set(['instagramReel','instagramStory','facebookReel']);
+      if (!body.slug || !allowed.has(body.channel)) throw new Error('缺少有效的影片或管道');
+      const queue = await readQueue();
+      const job = queue.jobs.find(item => item.slug === body.slug);
+      if (!job) throw new Error(`排程佇列找不到：${body.slug}`);
+      job.channels ||= {};
+      job.channels[body.channel] = {
+        status: 'remote_scheduled',
+        publishAt: body.publishAt || job.publishAt,
+        source: body.source || 'Meta Business Suite',
+        updatedAt: new Date().toISOString()
+      };
+      job.updatedAt = new Date().toISOString();
+      await writeQueue(queue);
+      await log(`remote scheduled ${body.slug} ${body.channel} for ${job.channels[body.channel].publishAt}`);
+      return send(res, 200, { ok: true, job: publicJob(job) });
     }
     if (url.pathname === '/api/run' && req.method === 'POST') {
       await runDueJobs();

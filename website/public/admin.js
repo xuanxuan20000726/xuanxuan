@@ -61,8 +61,8 @@ function syncScheduleRows(jobs) {
     const published = job.status === 'published';
     const channelLabel = (channel, label, type) => {
       const status = channel?.status || 'scheduled';
-      const text = ({ published: '已發布', scheduled: '本機待發佈', publishing: '發佈中', failed: '失敗', authorization_required: '待授權', not_requested: '舊排程未包含' })[status] || status;
-      const active = ['published','scheduled','publishing'].includes(status);
+      const text = ({ published: '已發布', remote_scheduled: 'Meta 已排程', scheduled: '本機待發佈', publishing: '發佈中', failed: '失敗', authorization_required: '待授權', not_requested: '舊排程未包含' })[status] || status;
+      const active = ['published','remote_scheduled','scheduled','publishing'].includes(status);
       return `<span class="platform-badge ${active ? 'active' : 'missing'}" title="${escapeHTML(channel?.error || '')}"><i class="${type}"></i>${label} ${text}</span>`;
     };
     platforms.innerHTML = [
