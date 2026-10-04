@@ -3,7 +3,7 @@
     "username": "xuan.xuan20000726",
     "displayName": "米媗媗",
     "connectedVia": "Meta Business Suite",
-    "lastVerifiedAt": "2026-10-04T08:26:21.445Z"
+    "lastVerifiedAt": "2026-10-04T09:02:54.902Z"
   },
   "schedule": [
     {
@@ -83,6 +83,54 @@
       "publishAt": "2026-10-08T21:00:00+08:00",
       "title": "120 種效果不是點菜單，舞台需要一條走得完的路",
       "slug": "boss-ex4-expander",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-09T08:00:00+08:00",
+      "title": "音樂祭不只排歌單，也在測試作品的第一口呼吸",
+      "slug": "voices-2026-new-songs",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-09T21:00:00+08:00",
+      "title": "把整塊效果器搬進軟體，方便之前先把版本說清楚",
+      "slug": "tonex-2-rig",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-10T08:00:00+08:00",
+      "title": "盤帶不是懷舊濾鏡，而是一套逼你做決定的錄音方法",
+      "slug": "cosmos-dear-you-tape",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-10T21:00:00+08:00",
+      "title": "iPad 合成器進入 AUv3，靈感終於不用停在獨立 App",
+      "slug": "zenology-gx-auv3",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-11T08:00:00+08:00",
+      "title": "族語音樂不是文化標本，也可以是今天的 City Pop",
+      "slug": "yokeoasu-tsou-citypop",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-11T21:00:00+08:00",
+      "title": "免費 DAW 一口氣長大，功能多了更要守住工作流",
+      "slug": "sandyne-25-workflow",
       "facebook": false,
       "instagram": true,
       "instagramStatus": "scheduled"
