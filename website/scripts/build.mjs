@@ -44,7 +44,7 @@ const write = async (file, html) => { const target=path.join(out,file); await fs
 await write('index.html', shell('音樂、AI 與生活', '我是米媗媗，喜歡把腦中的旋律變成真的聲音。這裡記錄我的學習背景、音樂與 AI 探索，以及日常觀察。', home, 'home'));
 await write('resume/index.html', shell('履歷', '米媗媗的工作經歷、學習背景與音樂、AI 輔助創作及生活書寫的探索方向。', resume, 'resume', 'resume/'));
 await write('admin/index.html', shell('內容控制台', '米媗媗的 Instagram 影片排程與網站同步狀態。', admin, '', 'admin/'));
-await write('oauth/instagram/callback/index.html', `<!doctype html><meta charset="utf-8"><title>Instagram 授權處理中</title><p style="font-family:sans-serif;text-align:center;margin:20vh auto">正在返回本機排程服務…</p><script>location.replace('http://localhost:43170/auth/instagram/callback'+location.search+location.hash)</script>`);
+await write('oauth/instagram/callback/index.html', `<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>Instagram 授權處理中</title></head><body><h1 style="font-family:sans-serif;text-align:center;margin:20vh auto">正在返回本機排程服務…</h1><script>location.replace('http://localhost:43170/auth/instagram/callback'+location.search+location.hash)</script></body></html>`);
 await write('articles/index.html', shell('文章', '關於音樂創作、AI 輔助創作與生活觀察的筆記。', `<main id="main" class="container archive"><div class="page-heading"><div><h1>文章</h1><p>音樂、科技，還有值得被聽見的日常。</p></div></div><section data-article-browser data-base="${esc(base)}" data-mode="archive"><p class="loading-note" role="status">正在讀取文章…</p><noscript>請開啟 JavaScript，查看已刊登的文章。</noscript></section></main>`, 'articles', 'articles/'));
 const catalog = articles.map(({body,...a})=>a);
 await write('data/articles.json', JSON.stringify(catalog));
