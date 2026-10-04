@@ -345,6 +345,7 @@ async function handler(req, res) {
       const cfg = config();
       return send(res, 200, {
         online: true, configured: Boolean(cfg.igUserId && cfg.accessToken), username: cfg.username,
+        supportedChannels: ['instagramReel', 'instagramStory', 'facebookReel'],
         graphVersion, redirectUri, authorizationUrl: cfg.appId && cfg.appSecret && !cfg.accessToken ? oauthUrl() : null,
         facebook: {
           configured: Boolean(cfg.facebookPageId && cfg.facebookPageToken),
