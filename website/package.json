@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
-    "preview": "node scripts/serve.mjs"
+    "preview": "node scripts/serve.mjs",
+    "test": "node --test scripts/publishing.test.mjs"
   },
   "dependencies": {
     "markdown-it": "14.3.2"

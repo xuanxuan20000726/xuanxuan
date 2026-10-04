@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'../dist');
 const base=new URL(process.env.SITE_URL||'http://127.0.0.1:4173/ji-yixuan').pathname.replace(/\/$/,'');
-const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml','.xml':'application/xml'};
+const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml','.xml':'application/xml','.json':'application/json; charset=utf-8'};
 http.createServer(async(req,res)=>{
  try{
   let name=decodeURIComponent(new URL(req.url,'http://localhost').pathname);

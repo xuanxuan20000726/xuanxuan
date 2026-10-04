@@ -1,0 +1,44 @@
+{
+  "instagram": {
+    "username": "nextdoorsoundweaver",
+    "displayName": "米媗媗",
+    "connectedVia": "Meta Business Suite",
+    "lastVerifiedAt": "2026-10-04T10:00:00+08:00"
+  },
+  "schedule": [
+    {
+      "publishAt": "2026-10-04T08:00:00+08:00",
+      "title": "Tract：用量測讀懂聲學空間",
+      "slug": "tract-measure",
+      "facebook": true,
+      "instagram": true
+    },
+    {
+      "publishAt": "2026-10-04T21:00:00+08:00",
+      "title": "數位薩克斯風：呼吸與控制的重新設計",
+      "slug": "yds-digital-sax",
+      "facebook": true,
+      "instagram": true
+    },
+    {
+      "publishAt": "2026-10-05T08:00:00+08:00",
+      "title": "Phoenix：把軟體音色帶回可演奏的硬體介面",
+      "slug": "phoenix-hybrid",
+      "facebook": true,
+      "instagram": true
+    },
+    {
+      "publishAt": "2026-10-05T21:00:00+08:00",
+      "title": "Volt Gen 2：錄音介面開始主動守住表演",
+      "slug": "volt-gen2",
+      "facebook": true,
+      "instagram": true
+    }
+  ],
+  "website": {
+    "expectedName": "米媗媗",
+    "repository": "xuanxuan20000726/ji-yixuan",
+    "branch": "main",
+    "resumeUrl": "https://xuanxuan20000726.github.io/ji-yixuan/resume/"
+  }
+}

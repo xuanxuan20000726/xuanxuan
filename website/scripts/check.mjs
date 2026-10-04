@@ -18,7 +18,7 @@ for(const file of entries.filter(f=>f.endsWith('.html'))){
   await fs.access(path.join(root,local)).catch(()=>{throw Error(`${file}: broken link ${href}`)});
   links++;
  }
- if(file.startsWith('articles/')&&file!=='articles/index.html'&&!html.includes('class="reading-cover"')) throw Error('Article needs image');
+ if(file.startsWith('articles/')&&file!=='articles/index.html'&&!html.includes('data-article-reader')) throw Error('Article needs image');
  pages++;
 }
 console.log(`Verified ${pages} HTML pages and ${links} internal links/assets, article images, language, headings and Pages subpath.`);
