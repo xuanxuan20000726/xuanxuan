@@ -24,8 +24,9 @@ async function fetchText(url) {
   return response.text();
 }
 
-function platformBadge(enabled, type, label) {
-  return `<span class="platform-badge ${enabled ? 'active' : 'missing'}"><i class="${type}"></i>${label}${enabled ? ' 已排程' : ' 未排程'}</span>`;
+function platformBadge(enabled, type, label, status) {
+  const stateLabel = status === 'published' ? ' 已發布' : ' 已排程';
+  return `<span class="platform-badge ${enabled ? 'active' : 'missing'}"><i class="${type}"></i>${label}${enabled ? stateLabel : ' 未排程'}</span>`;
 }
 
 function renderSchedule(data) {
@@ -37,8 +38,8 @@ function renderSchedule(data) {
   $('[data-next-post]').textContent = future.length ? `下一支 · ${formatter.format(new Date(future[0].publishAt))}` : '目前沒有待發佈影片';
   $('[data-schedule-list]').innerHTML = data.schedule.map(item => {
     const time = new Date(item.publishAt);
-    const state = time.getTime() <= now ? '時間已到' : '等待發佈';
-    return `<article class="schedule-row"><time datetime="${item.publishAt}"><strong>${formatter.format(time).replace('週','')}</strong><span>${state}</span></time><div class="schedule-copy"><h3>${escapeHTML(item.title)}</h3><p>短影音播報 · 直式三頁重點</p></div><div class="platforms">${platformBadge(item.facebook,'facebook','Facebook')}${platformBadge(item.instagram,'instagram','Instagram')}</div></article>`;
+    const state = item.instagramStatus === 'published' ? '已發布' : (time.getTime() <= now ? '時間已到' : '等待發佈');
+    return `<article class="schedule-row"><time datetime="${item.publishAt}"><strong>${formatter.format(time).replace('週','')}</strong><span>${state}</span></time><div class="schedule-copy"><h3>${escapeHTML(item.title)}</h3><p>短影音播報 · 直式三頁重點</p></div><div class="platforms">${platformBadge(item.facebook,'facebook','Facebook')}${platformBadge(item.instagram,'instagram','Instagram',item.instagramStatus)}</div></article>`;
   }).join('');
 }
 
