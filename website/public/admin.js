@@ -51,6 +51,21 @@ function setSchedulerState(kind, label, detail) {
   $('[data-scheduler-detail]').textContent = detail;
 }
 
+function syncScheduleRows(jobs) {
+  const localJobs = new Map(jobs.map(job => [job.slug, job]));
+  document.querySelectorAll('[data-schedule-row]').forEach(row => {
+    const job = localJobs.get(row.dataset.scheduleRow);
+    if (!job) return;
+    const platforms = row.querySelector('.platforms');
+    if (!platforms) return;
+    const published = job.status === 'published';
+    const label = published ? 'Instagram 已發布' : 'Instagram 已排程';
+    platforms.innerHTML = `<span class="platform-badge active"><i class="instagram"></i>${label}</span>`;
+    const timeState = row.querySelector('time span');
+    if (timeState && published) timeState.textContent = '已發布';
+  });
+}
+
 async function schedulerRequest(path, options) {
   const response = await fetch(`${schedulerBase}${path}`, { cache: 'no-store', ...options });
   const data = await response.json();
@@ -65,6 +80,7 @@ async function refreshScheduler() {
     const authLink = status.authorizationUrl ? ` <a href="${escapeHTML(status.authorizationUrl)}" target="_blank" rel="noreferrer">開始 Instagram 授權</a>` : '';
     setSchedulerState(status.configured ? 'ok' : 'warn', status.configured ? '排程服務已連線' : '排程服務待授權', status.configured ? `@${status.username} · ${queued} 支影片在本機佇列` : `服務已啟動；請完成一次官方授權。${authLink}`);
     $('[data-scheduler-jobs]').innerHTML = status.jobs.length ? status.jobs.map(job => `<li><strong>${escapeHTML(job.title)}</strong><span>${escapeHTML(job.status)} · ${formatter.format(new Date(job.publishAt))}</span></li>`).join('') : '<li class="empty-state">本機佇列目前沒有影片。</li>';
+    syncScheduleRows(status.jobs);
     document.querySelectorAll('[data-schedule-slug]').forEach(button => { button.disabled = !status.configured; });
   } catch {
     setSchedulerState('warn', '本機排程服務未啟動', '先執行 npm run ig:server；設定完成後可安裝為登入時自動啟動。');
