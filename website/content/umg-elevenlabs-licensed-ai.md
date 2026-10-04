@@ -1,0 +1,17 @@
+# AI 音樂走向授權，同意不能只寫在新聞稿
+
+UMG 與 ElevenLabs 宣布多年合作，要建立一個有授權的 AI 音樂創作平台。
+
+官方已確認的重點有三個：
+
+- 使用參與藝人的歌曲做 remix 與 mashup
+- 同時開發藝人與創作人的 AI 音訊工具
+- 官方定位為授權與產品開發合作
+
+從技術面看，訓練授權、生成使用與分配需分開設計；參與藝人不等於整個曲庫都可用；來源標示與下架機制會決定信任。這些規格描述的是設計方向，不等於每個人的實際使用結果。聲音、延遲、手感與工作流程，仍要放進真實創作或演出環境裡判斷。
+
+我的看法是：合法是起點，不是產品的免檢章。創作者要看得懂自己同意了什麼。報酬、追蹤與退出要能真正執行。科技成為創作者的另一雙手之前，先要願意接受創作者用耳朵、手感與權利條件來驗收。
+
+來源：[Universal Music Group](https://www.universalmusic.com/universal-music-group-and-elevenlabs-announce-multi-year-strategic-agreement-beginning-with-a-new-licensed-ai-music-creation-platform/)，2026-09-10。
+
+#音樂科技 #AI音樂 #音訊創作 #樂器科技

@@ -3,7 +3,7 @@
     "username": "xuan.xuan20000726",
     "displayName": "米媗媗",
     "connectedVia": "Meta Business Suite",
-    "lastVerifiedAt": "2026-10-04T11:00:00+08:00"
+    "lastVerifiedAt": "2026-10-04T08:26:21.445Z"
   },
   "schedule": [
     {
@@ -38,6 +38,54 @@
       "facebook": false,
       "instagram": false,
       "instagramStatus": "pending"
+    },
+    {
+      "publishAt": "2026-10-06T08:00:00+08:00",
+      "title": "AI 進入取樣器，創作的重點是能不能失控",
+      "slug": "engram-tiny-ai",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-06T21:00:00+08:00",
+      "title": "好的簽名琴，應該放大觸弦，不是放大簽名",
+      "slug": "yamaha-rs20mm",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-07T08:00:00+08:00",
+      "title": "AI 音樂走向授權，同意不能只寫在新聞稿",
+      "slug": "umg-elevenlabs-licensed-ai",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-07T21:00:00+08:00",
+      "title": "0.99 毫秒很漂亮，錄音室還要看完整路徑",
+      "slug": "audient-horizon-native",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-08T08:00:00+08:00",
+      "title": "耳機懂得更多，也要讓人知道它聽了什麼",
+      "slug": "snapdragon-ai-hearables",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
+    },
+    {
+      "publishAt": "2026-10-08T21:00:00+08:00",
+      "title": "120 種效果不是點菜單，舞台需要一條走得完的路",
+      "slug": "boss-ex4-expander",
+      "facebook": false,
+      "instagram": true,
+      "instagramStatus": "scheduled"
     }
   ],
   "website": {
