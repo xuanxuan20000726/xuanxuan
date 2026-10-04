@@ -32,7 +32,7 @@ await loadEnv();
 const config = () => ({
   username: process.env.IG_USERNAME || 'xuan.xuan20000726',
   igUserId: process.env.IG_USER_ID || '',
-  accessToken: process.env.META_ACCESS_TOKEN || ''
+  accessToken: process.env.IG_ACCESS_TOKEN || process.env.META_ACCESS_TOKEN || ''
 });
 
 async function ensureState() {
@@ -91,7 +91,7 @@ async function articleFor(slug) {
 async function graph(pathname, fields = {}) {
   const { accessToken } = config();
   const body = new URLSearchParams({ ...fields, access_token: accessToken });
-  const response = await fetch(`https://graph.facebook.com/${graphVersion}/${pathname}`, {
+  const response = await fetch(`https://graph.instagram.com/${graphVersion}/${pathname}`, {
     method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body
   });
   const result = await response.json();
@@ -101,7 +101,7 @@ async function graph(pathname, fields = {}) {
 
 async function containerStatus(id) {
   const { accessToken } = config();
-  const response = await fetch(`https://graph.facebook.com/${graphVersion}/${id}?fields=status_code,status&access_token=${encodeURIComponent(accessToken)}`);
+  const response = await fetch(`https://graph.instagram.com/${graphVersion}/${id}?fields=status_code,status&access_token=${encodeURIComponent(accessToken)}`);
   const result = await response.json();
   if (!response.ok || result.error) throw new Error(result.error?.message || `Meta API ${response.status}`);
   return result;
@@ -111,7 +111,7 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function publish(job) {
   const { igUserId, accessToken } = config();
-  if (!igUserId || !accessToken) throw new Error('尚未設定 IG_USER_ID 或 META_ACCESS_TOKEN');
+  if (!igUserId || !accessToken) throw new Error('尚未設定 IG_USER_ID 或 IG_ACCESS_TOKEN');
   const created = await graph(`${igUserId}/media`, {
     media_type: 'REELS', video_url: job.videoUrl, caption: job.caption, share_to_feed: 'true'
   });

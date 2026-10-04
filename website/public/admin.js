@@ -41,7 +41,7 @@ function renderSchedule(data) {
     const time = new Date(item.publishAt);
     const state = item.instagramStatus === 'published' ? '已發布' : (time.getTime() <= now ? '時間已到' : '等待發佈');
     const action = item.instagramStatus === 'pending' ? `<button class="schedule-action" type="button" data-schedule-slug="${escapeHTML(item.slug)}">加入排程</button>` : '';
-    return `<article class="schedule-row" data-schedule-row="${escapeHTML(item.slug)}"><time datetime="${item.publishAt}"><strong>${formatter.format(time).replace('週','')}</strong><span>${state}</span></time><div class="schedule-copy"><h3>${escapeHTML(item.title)}</h3><p>短影音播報 · 直式三頁重點</p></div><div class="platforms">${platformBadge(item.facebook,'facebook','Facebook')}${platformBadge(item.instagram,'instagram','Instagram',item.instagramStatus)}${action}</div></article>`;
+    return `<article class="schedule-row" data-schedule-row="${escapeHTML(item.slug)}"><time datetime="${item.publishAt}"><strong>${formatter.format(time).replace('週','')}</strong><span>${state}</span></time><div class="schedule-copy"><h3>${escapeHTML(item.title)}</h3><p>短影音播報 · 直式三頁重點</p></div><div class="platforms">${platformBadge(item.instagram,'instagram','Instagram',item.instagramStatus)}${action}</div></article>`;
   }).join('');
 }
 
@@ -62,7 +62,7 @@ async function refreshScheduler() {
   try {
     const status = await schedulerRequest('/api/status');
     const queued = status.jobs.filter(job => ['scheduled','publishing'].includes(job.status)).length;
-    setSchedulerState(status.configured ? 'ok' : 'warn', status.configured ? '排程服務已連線' : '排程服務待設定', status.configured ? `@${status.username} · ${queued} 支影片在本機佇列` : '服務已啟動，但尚未設定 Meta API 權杖。');
+    setSchedulerState(status.configured ? 'ok' : 'warn', status.configured ? '排程服務已連線' : '排程服務待授權', status.configured ? `@${status.username} · ${queued} 支影片在本機佇列` : '服務已啟動；請用 Instagram Login 完成一次官方授權。');
     $('[data-scheduler-jobs]').innerHTML = status.jobs.length ? status.jobs.map(job => `<li><strong>${escapeHTML(job.title)}</strong><span>${escapeHTML(job.status)} · ${formatter.format(new Date(job.publishAt))}</span></li>`).join('') : '<li class="empty-state">本機佇列目前沒有影片。</li>';
     document.querySelectorAll('[data-schedule-slug]').forEach(button => { button.disabled = !status.configured; });
   } catch {
